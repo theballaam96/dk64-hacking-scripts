@@ -4,236 +4,8 @@ import shutil
 import gzip
 from typing import BinaryIO
 import math
-import tkinter as tk
-from tkinter import filedialog
 
-root = tk.Tk()
-root.withdraw()
-
-maps = [
-	"Test Map", # 0
-	"Funky's Store",
-	"DK Arcade",
-	"K. Rool Barrel: Lanky's Maze",
-	"Jungle Japes: Mountain",
-	"Cranky's Lab",
-	"Jungle Japes: Minecart",
-	"Jungle Japes",
-	"Jungle Japes: Army Dillo",
-	"Jetpac",
-	"Kremling Kosh! (very easy)", # 10
-	"Stealthy Snoop! (normal, no logo)",
-	"Jungle Japes: Shell",
-	"Jungle Japes: Lanky's Cave",
-	"Angry Aztec: Beetle Race",
-	"Snide's H.Q.",
-	"Angry Aztec: Tiny's Temple",
-	"Hideout Helm",
-	"Teetering Turtle Trouble! (very easy)",
-	"Angry Aztec: Five Door Temple (DK)",
-	"Angry Aztec: Llama Temple", # 20
-	"Angry Aztec: Five Door Temple (Diddy)",
-	"Angry Aztec: Five Door Temple (Tiny)",
-	"Angry Aztec: Five Door Temple (Lanky)",
-	"Angry Aztec: Five Door Temple (Chunky)",
-	"Candy's Music Shop",
-	"Frantic Factory",
-	"Frantic Factory: Car Race",
-	"Hideout Helm (Level Intros, Game Over)",
-	"Frantic Factory: Power Shed",
-	"Gloomy Galleon", # 30
-	"Gloomy Galleon: K. Rool's Ship",
-	"Batty Barrel Bandit! (easy)",
-	"Jungle Japes: Chunky's Cave",
-	"DK Isles Overworld",
-	"K. Rool Barrel: DK's Target Game",
-	"Frantic Factory: Crusher Room",
-	"Jungle Japes: Barrel Blast",
-	"Angry Aztec",
-	"Gloomy Galleon: Seal Race",
-	"Nintendo Logo", # 40
-	"Angry Aztec: Barrel Blast",
-	"Troff 'n' Scoff", # 42
-	"Gloomy Galleon: Shipwreck (Diddy, Lanky, Chunky)",
-	"Gloomy Galleon: Treasure Chest",
-	"Gloomy Galleon: Mermaid",
-	"Gloomy Galleon: Shipwreck (DK, Tiny)",
-	"Gloomy Galleon: Shipwreck (Lanky, Tiny)",
-	"Fungi Forest",
-	"Gloomy Galleon: Lighthouse",
-	"K. Rool Barrel: Tiny's Mushroom Game", # 50
-	"Gloomy Galleon: Mechanical Fish",
-	"Fungi Forest: Ant Hill",
-	"Battle Arena: Beaver Brawl!",
-	"Gloomy Galleon: Barrel Blast",
-	"Fungi Forest: Minecart",
-	"Fungi Forest: Diddy's Barn",
-	"Fungi Forest: Diddy's Attic",
-	"Fungi Forest: Lanky's Attic",
-	"Fungi Forest: DK's Barn",
-	"Fungi Forest: Spider", # 60
-	"Fungi Forest: Front Part of Mill",
-	"Fungi Forest: Rear Part of Mill",
-	"Fungi Forest: Mushroom Puzzle",
-	"Fungi Forest: Giant Mushroom",
-	"Stealthy Snoop! (normal)",
-	"Mad Maze Maul! (hard)",
-	"Stash Snatch! (normal)",
-	"Mad Maze Maul! (easy)",
-	"Mad Maze Maul! (normal)", # 69
-	"Fungi Forest: Mushroom Leap", # 70
-	"Fungi Forest: Shooting Game",
-	"Crystal Caves",
-	"Battle Arena: Kritter Karnage!",
-	"Stash Snatch! (easy)",
-	"Stash Snatch! (hard)",
-	"DK Rap",
-	"Minecart Mayhem! (easy)", # 77
-	"Busy Barrel Barrage! (easy)",
-	"Busy Barrel Barrage! (normal)",
-	"Main Menu", # 80
-	"Title Screen (Not For Resale Version)",
-	"Crystal Caves: Beetle Race",
-	"Fungi Forest: Dogadon",
-	"Crystal Caves: Igloo (Tiny)",
-	"Crystal Caves: Igloo (Lanky)",
-	"Crystal Caves: Igloo (DK)",
-	"Creepy Castle",
-	"Creepy Castle: Ballroom",
-	"Crystal Caves: Rotating Room",
-	"Crystal Caves: Shack (Chunky)", # 90
-	"Crystal Caves: Shack (DK)",
-	"Crystal Caves: Shack (Diddy, middle part)",
-	"Crystal Caves: Shack (Tiny)",
-	"Crystal Caves: Lanky's Hut",
-	"Crystal Caves: Igloo (Chunky)",
-	"Splish-Splash Salvage! (normal)",
-	"K. Lumsy",
-	"Crystal Caves: Ice Castle",
-	"Speedy Swing Sortie! (easy)",
-	"Crystal Caves: Igloo (Diddy)", # 100
-	"Krazy Kong Klamour! (easy)",
-	"Big Bug Bash! (very easy)",
-	"Searchlight Seek! (very easy)",
-	"Beaver Bother! (easy)",
-	"Creepy Castle: Tower",
-	"Creepy Castle: Minecart",
-	"Kong Battle: Battle Arena",
-	"Creepy Castle: Crypt (Lanky, Tiny)",
-	"Kong Battle: Arena 1",
-	"Frantic Factory: Barrel Blast", # 110
-	"Gloomy Galleon: Pufftoss",
-	"Creepy Castle: Crypt (DK, Diddy, Chunky)",
-	"Creepy Castle: Museum",
-	"Creepy Castle: Library",
-	"Kremling Kosh! (easy)",
-	"Kremling Kosh! (normal)",
-	"Kremling Kosh! (hard)",
-	"Teetering Turtle Trouble! (easy)",
-	"Teetering Turtle Trouble! (normal)",
-	"Teetering Turtle Trouble! (hard)", # 120
-	"Batty Barrel Bandit! (easy)",
-	"Batty Barrel Bandit! (normal)",
-	"Batty Barrel Bandit! (hard)",
-	"Mad Maze Maul! (insane)",
-	"Stash Snatch! (insane)",
-	"Stealthy Snoop! (very easy)",
-	"Stealthy Snoop! (easy)",
-	"Stealthy Snoop! (hard)",
-	"Minecart Mayhem! (normal)",
-	"Minecart Mayhem! (hard)", # 130
-	"Busy Barrel Barrage! (hard)",
-	"Splish-Splash Salvage! (hard)",
-	"Splish-Splash Salvage! (easy)",
-	"Speedy Swing Sortie! (normal)",
-	"Speedy Swing Sortie! (hard)",
-	"Beaver Bother! (normal)",
-	"Beaver Bother! (hard)",
-	"Searchlight Seek! (easy)",
-	"Searchlight Seek! (normal)",
-	"Searchlight Seek! (hard)", # 140
-	"Krazy Kong Klamour! (normal)",
-	"Krazy Kong Klamour! (hard)",
-	"Krazy Kong Klamour! (insane)",
-	"Peril Path Panic! (very easy)",
-	"Peril Path Panic! (easy)",
-	"Peril Path Panic! (normal)",
-	"Peril Path Panic! (hard)",
-	"Big Bug Bash! (easy)",
-	"Big Bug Bash! (normal)",
-	"Big Bug Bash! (hard)", # 150
-	"Creepy Castle: Dungeon",
-	"Hideout Helm (Intro Story)",
-	"DK Isles (DK Theatre)",
-	"Frantic Factory: Mad Jack",
-	"Battle Arena: Arena Ambush!",
-	"Battle Arena: More Kritter Karnage!",
-	"Battle Arena: Forest Fracas!",
-	"Battle Arena: Bish Bash Brawl!",
-	"Battle Arena: Kamikaze Kremlings!",
-	"Battle Arena: Plinth Panic!", # 160
-	"Battle Arena: Pinnacle Palaver!",
-	"Battle Arena: Shockwave Showdown!",
-	"Creepy Castle: Basement",
-	"Creepy Castle: Tree",
-	"K. Rool Barrel: Diddy's Kremling Game",
-	"Creepy Castle: Chunky's Toolshed",
-	"Creepy Castle: Trash Can",
-	"Creepy Castle: Greenhouse",
-	"Jungle Japes Lobby",
-	"Hideout Helm Lobby", # 170
-	"DK's House",
-	"Rock (Intro Story)",
-	"Angry Aztec Lobby",
-	"Gloomy Galleon Lobby",
-	"Frantic Factory Lobby",
-	"Training Grounds",
-	"Dive Barrel",
-	"Fungi Forest Lobby",
-	"Gloomy Galleon: Submarine",
-	"Orange Barrel", # 180
-	"Barrel Barrel",
-	"Vine Barrel",
-	"Creepy Castle: Crypt",
-	"Enguarde Arena",
-	"Creepy Castle: Car Race",
-	"Crystal Caves: Barrel Blast",
-	"Creepy Castle: Barrel Blast",
-	"Fungi Forest: Barrel Blast",
-	"Fairy Island",
-	"Kong Battle: Arena 2", # 190
-	"Rambi Arena",
-	"Kong Battle: Arena 3",
-	"Creepy Castle Lobby",
-	"Crystal Caves Lobby",
-	"DK Isles: Snide's Room",
-	"Crystal Caves: Army Dillo",
-	"Angry Aztec: Dogadon",
-	"Training Grounds (End Sequence)",
-	"Creepy Castle: King Kut Out",
-	"Crystal Caves: Shack (Diddy, upper part)", # 200
-	"K. Rool Barrel: Diddy's Rocketbarrel Game",
-	"K. Rool Barrel: Lanky's Shooting Game",
-	"K. Rool Fight: DK Phase",
-	"K. Rool Fight: Diddy Phase",
-	"K. Rool Fight: Lanky Phase",
-	"K. Rool Fight: Tiny Phase",
-	"K. Rool Fight: Chunky Phase",
-	"Bloopers Ending",
-	"K. Rool Barrel: Chunky's Hidden Kremling Game",
-	"K. Rool Barrel: Tiny's Pony Tail Twirl Game", # 210
-	"K. Rool Barrel: Chunky's Shooting Game",
-	"K. Rool Barrel: DK's Rambi Game",
-	"K. Lumsy Ending",
-	"K. Rool's Shoe",
-	"K. Rool's Arena", # 215
-	"UNKNOWN 216",
-	"UNKNOWN 217",
-	"UNKNOWN 218",
-	"UNKNOWN 219",
-	"UNKNOWN 220",
-	"UNKNOWN 221",
-];
+from lib import getFilePath, getROMData, getSafeFolderName, maps
 
 hud_items = [
 	"Coloured banana",
@@ -1232,14 +1004,12 @@ relevant_pointer_tables = [
 
 num_tables = 32
 pointer_tables = []
-pointer_table_offsets = [0x101C50,0x1038D0,0x1039C0, 0x1A7C20]
-main_pointer_table_offset = pointer_table_offsets[0]
-folder_append = ["_us","_pal","_jp","_kiosk"]
+main_pointer_table_offset = 0
 setup_table_index = 9
 script_table_index = 10
-files = {};
-tab_indentation = 0;
-folder_removal = [];
+files = {}
+tab_indentation = 0
+folder_removal = []
 version = 0
 
 def getTriggerTypeName(index):
@@ -2366,11 +2136,11 @@ def make_safe_filename(s):
 			return "_"
 	return "".join(safe_char(c) for c in s).rstrip("_")
 
-def extractMaps(src_file: str):
+def extractMaps(src_file: str, dump_path: str):
 	global maps
 
 	for mapIndex, mapName in enumerate(maps):
-		mapPath = f"map_scripts{folder_append[version]}/" + str(mapIndex) + " - " + make_safe_filename(mapName)
+		mapPath = f"{dump_path}/{mapIndex} - {make_safe_filename(mapName)}"
 		os.mkdir(mapPath)
 		extractMap(src_file, mapIndex, mapPath)
 
@@ -2403,7 +2173,8 @@ def extractMap(src_file: str, mapIndex : int, mapPath : str):
 				if entry_size > 0:
 					fl.seek(entry_start)
 					compress = fl.read(entry_size)
-					with open("temp.bin","wb") as fh:
+					temp_bin = "temp.bin"
+					with open(temp_bin,"wb") as fh:
 						fh.write(compress)
 					if int.from_bytes(compress[0:1],"big") == 0x1F and int.from_bytes(compress[1:2],"big") == 0x8B:
 						data = zlib.decompress(compress, 15+32)
@@ -2420,71 +2191,38 @@ def extractMap(src_file: str, mapIndex : int, mapPath : str):
 						with open(built_script, "wb") as fh:
 							fh.write(data)
 						grabScripts(data,mapPath)
+					if os.path.exists(temp_bin):
+						os.remove(temp_bin)
 			idx += 1
 	if sizes[0] + sizes[1] == 0:
 		folder_removal.append(mapPath)
 
 def bytereadToInt(read):
-	total = 0;
+	total = 0
 	for x in list(read):
-		total = (total * 256) + x;
-	return total;
+		total = (total * 256) + x
+	return total
 
 def extractScripts():
 	global folder_removal
-	global pointer_table_offsets
 	global main_pointer_table_offset
-	global folder_append
 	global version
 
-	append = folder_append[0]
-
-	file_path = filedialog.askopenfilename()
-	with open(file_path,"rb") as fh:
-		endianness = int.from_bytes(fh.read(1),"big")
-		if endianness != 0x80:
-			print("File is little endian. Convert to big endian and re-run")
-			exit()
-		else:
-			fh.seek(0x3D)
-			release_or_kiosk = int.from_bytes(fh.read(1),"big")
-			region = int.from_bytes(fh.read(1),"big")
-			version = -1
-			if release_or_kiosk == 0x50:
-				version = 3 # Kiosk
-			else:
-				if region == 0x45:
-					version = 0 # US
-				elif region == 0x4A:
-					version = 2 # JP
-				elif region == 0x50:
-					version = 1 # PAL
-				else:
-					print("Invalid version")
-					exit()
-			main_pointer_table_offset = pointer_table_offsets[version]
-			append = folder_append[version]
-	if version < 0 or version > 3:
-		print("Invalid version")
-		exit()
-
-	folder_removal = []
-	dump_path = f"./map_scripts{append}"
-	if os.path.exists(dump_path):
-		shutil.rmtree(dump_path)
-	os.mkdir(f"./map_scripts{append}")
-	extractMaps(file_path)
-	for x in folder_removal:
-		if os.path.exists(x):
-			for filename in os.listdir(x):
-				file_path = os.path.join(x,filename)
-				try:
-					if os.path.isfile(file_path) or os.path.islink(file_path):
-						os.unlink(file_path)
-					elif os.path.isdir(file_path):
-						shutil.rmtree(file_path)
-				except Exception as e:
-					print("Failed to delete %s. Reason: %s" % (file_path, e))
-			os.rmdir(x)
+	file_path = getFilePath()
+	main_pointer_table_offset, version, dump_path, valid = getROMData(file_path, "instance scripts")
+	if valid:
+		extractMaps(file_path, dump_path)
+		for x in folder_removal:
+			if os.path.exists(x):
+				for filename in os.listdir(x):
+					file_path = os.path.join(x,filename)
+					try:
+						if os.path.isfile(file_path) or os.path.islink(file_path):
+							os.unlink(file_path)
+						elif os.path.isdir(file_path):
+							shutil.rmtree(file_path)
+					except Exception as e:
+						print("Failed to delete %s. Reason: %s" % (file_path, e))
+				os.rmdir(x)
 
 extractScripts()
