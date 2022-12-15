@@ -1,7 +1,7 @@
 import os
 import zlib
 import shutil
-from lib import getFilePath, getROMData, getSafeFolderName
+from lib import getFilePath, getROMData
 
 main_pointer_table_offset = 0
 version = 0

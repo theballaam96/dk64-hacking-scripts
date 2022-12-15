@@ -1,7 +1,7 @@
 import os
 import zlib
 import shutil
-from lib import getFilePath, getROMData, getSafeFolderName, maps
+from lib import getFilePath, getROMData, maps
 
 main_pointer_table_offset = 0
 version = 0
@@ -81,7 +81,7 @@ def getROMTables():
                 tbl_size = int.from_bytes(fh.read(4),"big")
                 fh.seek(main_pointer_table_offset + (focused_tbl * 4))
                 tbl_start = main_pointer_table_offset + int.from_bytes(fh.read(4),"big")
-                extractTable(tbl_start,tbl_size,f"{dump_path}/{geo_table_names[tbl_index]}",file_path,focused_tbl, subindex==0)
+                extractTable(tbl_start,tbl_size,f"{dump_path}/{geo_table_names[tbl_index]}",file_path,focused_tbl, sub_index==0)
                 tbl_index += 1
         with open(f"{dump_path}/unused.txt","w") as fh:
             for x in unused:

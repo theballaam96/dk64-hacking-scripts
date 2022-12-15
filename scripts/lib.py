@@ -43,7 +43,7 @@ maps = [
     "Frantic Factory: Power Shed",
     "Gloomy Galleon",  # 30
     "Gloomy Galleon: K. Rool's Ship",
-    "Batty Barrel Bandit! (easy)",
+    "Batty Barrel Bandit! (very easy)",
     "Jungle Japes: Chunky's Cave",
     "DK Isles Overworld",
     "K. Rool Barrel: DK's Target Game",
@@ -250,7 +250,7 @@ def getFilePath() -> str:
     if os.path.exists(f"{pre}ROM"):
         # Is running from BAT file
         with open(f"{pre}ROM","r") as fh:
-            return fh.read()
+            return fh.read().replace("\n","").strip()
     return filedialog.askopenfilename()
 
 def getROMData(rom_path: str, folder: str) -> tuple:

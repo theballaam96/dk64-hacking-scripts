@@ -4,7 +4,7 @@ import shutil
 import json
 import struct
 
-from lib import getFilePath, getROMData, getSafeFolderName, maps
+from lib import getFilePath, getROMData, maps
 
 main_pointer_table_offset = 0
 setup_table_index = 9
@@ -120,7 +120,7 @@ def extractSetup():
     global version
 
     file_path = getFilePath()
-	main_pointer_table_offset, version, dump_path, valid = getROMData(file_path, "setup")
+    main_pointer_table_offset, version, dump_path, valid = getROMData(file_path, "setup")
     if valid:
         extractMaps(file_path, dump_path)
         for x in folder_removal:

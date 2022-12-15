@@ -5,7 +5,7 @@ import gzip
 from typing import BinaryIO
 import math
 
-from lib import getFilePath, getROMData, getSafeFolderName, maps
+from lib import getFilePath, getROMData, maps
 
 hud_items = [
 	"Coloured banana",
