@@ -614,8 +614,8 @@ def analyzeFile(data,folder_name,file_index):
 		made = makeCodeFile(folder_name,cutscene["index"],cutscene_info,point_info,unused_segments,last)
 		if made:
 			file_count += 1
-	if file_count == 0:
-		os.rmdir(folder_name)
+	with open(f"{folder_name}/cutscenes.bin", "wb") as cs:
+		cs.write(data)
 
 file_path = getFilePath()
 pointer_table_offset, version, dump_path, valid = getROMData(file_path, "cutscenes")
