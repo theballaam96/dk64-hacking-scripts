@@ -2002,7 +2002,7 @@ def grabScripts(data,file_path):
 				jsonFile.write("\t}\n")
 
 
-			with open(file_path + "/" + object_name + "_" + str(hex(object_id)) + ".code","w") as scriptFile:
+			with open(file_path + "/" + object_name + "_" + str(hex(object_id)) + ".txt","w") as scriptFile:
 				block_count = readData(data,2,read_location + 2);
 				behav_9C = readData(data,2,read_location + 4);
 				read_location += 6;

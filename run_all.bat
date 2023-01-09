@@ -20,7 +20,7 @@ for /f "tokens=* delims=" %%p in ('mshta.exe %dialog%') do set "file=%%p"
 echo %file% >> ROM
 
 cd scripts
-for /r %%i in (*.py) do if NOT %%~nxi == lib.py call :runscript %%~nxi, %%i
+for /r %%i in (*.py) do if NOT %%~nxi == lib.py if NOT %%~nxi == texture_size_guesser.py call :runscript %%~nxi, %%i
 cd ../
 @REM for /r %%i in (scripts/*) do echo %%i
 
