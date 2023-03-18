@@ -3,12 +3,41 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 import shutil
+from enum import IntEnum, auto
 
 root = tk.Tk()
 root.withdraw()
 
 pointer_table_offsets = [0x101C50,0x1038D0,0x1039C0, 0x1A7C20]
 versions = ["us","pal","jp","kiosk"]
+
+class TextureFormats(IntEnum):
+    Unknown = auto()
+    RGBA5551 = auto()
+    RGBA32 = auto()
+    IA16 = auto()
+    IA8 = auto()
+    IA4 = auto()
+    I8 = auto()
+    I4 = auto()
+    CI8 = auto()
+    CI4 = auto()
+    BPP = auto()
+
+class TextureFile:
+
+    def __init__(self, name:str, format: TextureFormats, table: int, file_index: int, width: int, height: int, gif:list=[]):
+        if name == "":
+            self.name = f"TBL{table}_{file_index}_{width}_{height}"
+        else:
+            self.name = name
+        self.table = table
+        self.file_index = file_index
+        self.format = format
+        self.width = width
+        self.height = height
+        self.convert = format != TextureFormats.Unknown and width is not None and height is not None and width > 0 and height > 0
+        self.gif_listing = gif
 
 maps = [
     "Test Map",  # 0
@@ -289,6 +318,10 @@ def getROMData(rom_path: str, folder: str) -> tuple:
             shutil.rmtree(dump_path)
         os.mkdir(dump_path)
     return (pointer_table_offset, version, dump_path, version >= 0 and version <= 3)
+
+def getSafeFileName(name):
+    """Get file name without invalid characters."""
+    return name.replace("/","").replace("?","").replace(":","")
 
 def getSafeFolderName(name):
     """Get folder name without invalid characters."""
