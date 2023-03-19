@@ -4,6 +4,7 @@ import shutil
 from lib import getFilePath, getROMData, versions, getDirectoryLevel, TextureFormats, TextureFile, getSafeFileName
 import math
 from PIL import Image
+from db_textures_7 import textures_7
 from db_textures_14 import textures_14
 from db_textures_25 import textures_25
 from typing import BinaryIO
@@ -13,6 +14,11 @@ main_pointer_table_offset = 0
 version = 0
 tables = [7, 14, 25]
 temp_im = "temp_im.bin"
+texture_data_tables = {
+    7: textures_7,
+    14: textures_14,
+    25: textures_25,
+}
 
 DISABLE_SMART_IMAGE_PROCESSING = False
 
@@ -91,12 +97,9 @@ def getImage(file_bytes: bytes, table_index: int, file_index: int, version_index
     with open(temp_im, "wb") as tmp:
         tmp.write(file_bytes)
     with open(temp_im, "rb") as tmp:
-        tables = {
-            14: textures_14,
-            25: textures_25,
-        }
-        if table_index in tables:
-            current_table = tables[table_index]
+        
+        if table_index in texture_data_tables:
+            current_table = texture_data_tables[table_index]
             if current_table[file_index].convert and current_table[file_index].format in formats:
                 if len(current_table[file_index].gif_listing) > 0:
                     table_gifs[current_table[file_index].name] = [f"{getImageHex(f)}_{current_table[f].name}" for f in current_table[file_index].gif_listing]
