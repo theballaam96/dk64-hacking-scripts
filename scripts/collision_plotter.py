@@ -7,6 +7,8 @@ import math
 
 from lib import getFilePath, getROMData, maps, getSafeFolderName
 
+SHOW_FLOOR_UNUSED = False
+
 class Triangle:
     def __init__(self, coord_set_0: list, coord_set_1: list, coord_set_2: list, properties: int, sfx: int, brightness: int, unk17: int, table: int):
         self.coords = (coord_set_0, coord_set_1, coord_set_2)
@@ -22,6 +24,13 @@ class Triangle:
         self.is_damage = (properties & 0x40) != 0
         self.is_instadeath = (properties & 0x10) != 0
         self.is_water = (properties & 0x1) != 0
+        # 0x80 - Take damage
+        self.has_unused = False
+        if self.is_floor and ((properties & 0xB7AE) != 0):
+            if SHOW_FLOOR_UNUSED:
+                print(f"Triangle has unaccounted for properties {hex(properties & 0xB7AE)}")
+            self.has_unused = True
+
 
 class CollisionInfo:
     def __init__(self, pointer_table: int, name: str, count_0: int, count_1: int, compressed_bit: int, divisor: int):
@@ -111,6 +120,8 @@ def getGeoRead(fh: BinaryIO, offset: int, offset_size: int, pointer_offset: int,
     map_start = pointer_offset + (int.from_bytes(fh.read(4), "big") & 0x7FFFFFFF)
     map_end = pointer_offset + (int.from_bytes(fh.read(4), "big") & 0x7FFFFFFF)
     map_size = map_end - map_start
+    if map_size <= 0:
+        return 0
     fh.seek(map_start)
     compressed = int.from_bytes(fh.read(2), "big") == 0x1F8B
     fh.seek(map_start)
@@ -146,7 +157,9 @@ class Color:
 def getColorString(triangle: Triangle):
     if USE_COLORS:
         if triangle.is_floor:
-            if triangle.is_void:
+            if triangle.has_unused and SHOW_FLOOR_UNUSED:
+                return Color(0, 255, 0).asRatioString()
+            elif triangle.is_void:
                 return Color(0, 0, 0).asRatioString()
             elif triangle.is_damage:
                 return Color(122, 16, 19).asRatioString()

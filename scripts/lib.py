@@ -8,8 +8,18 @@ from enum import IntEnum, auto
 root = tk.Tk()
 root.withdraw()
 
-pointer_table_offsets = [0x101C50,0x1038D0,0x1039C0, 0x1A7C20]
-versions = ["us","pal","jp","kiosk"]
+class Version:
+    def __init__(self, name: str, pointer_offset: int):
+        self.name = name
+        self.pointer_offset = pointer_offset
+
+versions = [
+    Version("us", 0x101C50),
+    Version("pal", 0x1038D0),
+    Version("jp", 0x1039C0),
+    Version("kiosk", 0x1A7C20),
+    Version("lodgenet", 0x1037C0),
+]
 
 class TextureFormats(IntEnum):
     Unknown = auto()
@@ -302,12 +312,15 @@ def getROMData(rom_path: str, folder: str) -> tuple:
                     version = 2 # JP
                 elif region == 0x50:
                     version = 1 # PAL
+                elif region == 0x47:
+                    version = 4 # Lodgenet
                 else:
                     print("Invalid version")
                     return (None, None, None, False)
-            pointer_table_offset = pointer_table_offsets[version]
-            append = versions[version]
-        if version < 0 or version > 3:
+            version_info = versions[version]
+            pointer_table_offset = version_info.pointer_offset
+            append = version_info.name
+        if version < 0 or version > 4:
             print("Invalid version")
             return (None, None, None, False)
         sub_dump_path = f"{getDirectoryLevel()}bin/{folder}/"
@@ -317,7 +330,7 @@ def getROMData(rom_path: str, folder: str) -> tuple:
         if os.path.exists(dump_path):
             shutil.rmtree(dump_path)
         os.mkdir(dump_path)
-    return (pointer_table_offset, version, dump_path, version >= 0 and version <= 3)
+    return (pointer_table_offset, version, dump_path, version >= 0 and version <= 4)
 
 def getSafeFileName(name):
     """Get file name without invalid characters."""
