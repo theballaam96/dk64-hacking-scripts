@@ -431,20 +431,25 @@ def parseArray(data: bytes, offset: int):
                                 if byte_4 == 0 or unk9 not in (5, 15):
                                     instructions.append("CollisionData.counter_0++;")
                                 else:
-                                    instructions.append("if ((target->interaction_bitfield & 1) == 0) {")
-                                    instructions.append("// Not Player")
-                                    instructions.append("CollisionData.counter_0++;")
-                                    instructions.append("} else {")
-                                    if byte_4 == 0:
+                                    if local_tree.get("target_interaction", None) == 1 or "target_interaction" not in local_tree:
+                                        if "target_interaction" not in local_tree:
+                                            instructions.append("if ((target->interaction_bitfield & 1) == 0) {")
+                                        instructions.append("// Not Player")
                                         instructions.append("CollisionData.counter_0++;")
-                                    elif unk9 not in (5, 15):
-                                        instructions.append("CollisionData.counter_0++;")
-                                        force_break = unk9
-                                    else:
-                                        instructions.append("if (target->paad->invulnerability_timer == 0) {")
-                                        instructions.append("CollisionData.counter_0++;")
+                                        if "target_interaction" not in local_tree:
+                                            instructions.append("} else {")
+                                    if local_tree.get("target_interaction", 0) != 1:
+                                        if byte_4 == 0:
+                                            instructions.append("CollisionData.counter_0++;")
+                                        elif unk9 not in (5, 15):
+                                            instructions.append("CollisionData.counter_0++;")
+                                            force_break = unk9
+                                        else:
+                                            instructions.append("if (target->paad->invulnerability_timer == 0) {")
+                                            instructions.append("CollisionData.counter_0++;")
+                                            instructions.append("}")
+                                    if "target_interaction" not in local_tree:
                                         instructions.append("}")
-                                    instructions.append("}")
                                 if x in (0xBB, 0xEB, 0x123):
                                     instructions.append("if (actor->interactable_bitfield & 2) {")
                                     instructions.append("target->0x64 |= 0x1000;")
