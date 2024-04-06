@@ -224,7 +224,7 @@ def parseAnimationCode(code_size: int, index: int):
         while fh.tell() < code_size:
             command = int.from_bytes(fh.read(1), "big")
             ret = 0
-            cmd_list.append(f"// Command {command}, Offset: {hex(fh.tell() - start)}")
+            cmd_list.append(f"// Command {command}, Offset: {hex((fh.tell() - start) - 1)}")
             match command:
                 case 0:
                     cmd_list.append("return 0;")
