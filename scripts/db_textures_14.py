@@ -76,7 +76,7 @@ textures_14 = [
 	TextureFile("Factory Car Race map", TextureFormats.IA8, 14, 72, 64, 64),
 	TextureFile("Factory Car Race map", TextureFormats.IA8, 14, 73, 64, 64),
 	TextureFile("Dots on Factory Car Race map?", TextureFormats.IA8, 14, 74, 16, 16),
-	TextureFile("Lens flares???", TextureFormats.IA8, 14, 75, 64, 64),
+	TextureFile("Race Miss Square", TextureFormats.IA8, 14, 75, 64, 64),
 	TextureFile("Lens flares???", TextureFormats.IA8, 14, 76, 64, 64),
 	TextureFile("Lens flares???", TextureFormats.IA8, 14, 77, 64, 64),
 	TextureFile("Lens flares???", TextureFormats.IA8, 14, 78, 64, 64),
