@@ -42,6 +42,7 @@ formats = {
     TextureFormats.IA16: N64ImageFormats(16, RenderingFormats.IA, 8, 8),
     TextureFormats.IA8: N64ImageFormats(8, RenderingFormats.IA, 4, 4),
     TextureFormats.IA4: N64ImageFormats(4, RenderingFormats.IA, 3, 1),
+    TextureFormats.I16: N64ImageFormats(16, RenderingFormats.IA, 16, 0),
     TextureFormats.I8: N64ImageFormats(8, RenderingFormats.IA, 8, 0),
     TextureFormats.I4: N64ImageFormats(4, RenderingFormats.IA, 4, 0),
 }
