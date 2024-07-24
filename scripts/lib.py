@@ -28,6 +28,7 @@ class TextureFormats(IntEnum):
     IA16 = auto()
     IA8 = auto()
     IA4 = auto()
+    I16 = auto()
     I8 = auto()
     I4 = auto()
     CI8 = auto()
@@ -36,7 +37,7 @@ class TextureFormats(IntEnum):
 
 class TextureFile:
 
-    def __init__(self, name:str, format: TextureFormats, table: int, file_index: int, width: int, height: int, gif:list=[]):
+    def __init__(self, name:str, format: TextureFormats, table: int, file_index: int, width: int, height: int, *, gif:list=[]):
         if name == "":
             self.name = f"TBL{table}_{file_index}_{width}_{height}"
         else:
@@ -1037,4 +1038,4 @@ def getSafeFileName(name):
 
 def getSafeFolderName(name):
     """Get folder name without invalid characters."""
-    return name.replace(":"," -").replace(" ","_")
+    return name.replace(":"," -").replace(" ","_").replace("?","_")
