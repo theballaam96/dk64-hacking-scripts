@@ -353,28 +353,51 @@ actor_names = [
     "Pause Menu",
 ]
 
+extra_enemies = {
+    "Bug (Kiosk)": 0x8074B240,
+    "Jack in the Box (Kiosk)": 0x8074BBB8,
+    "Boxing Glove in the Box (Kiosk)": 0x8074BBB8,
+    "Army (Kiosk)": 0x8074B6FC,
+    "Unknown (Kiosk)": 0x8074B3E8,
+#
+}
+
 def parseArray(data: bytes, offset: int):
     """Parses collision array."""
     actor_collisions = []
     with open(TEMP_FILE, "wb") as fh:
         fh.write(data)
     with open(TEMP_FILE, "rb") as fh:
-        for x in range(344):
-            fh.seek(0x8074C604 - offset + (8 * x))
-            data_pointer = int.from_bytes(fh.read(4), "big")
-            byte_4 = int.from_bytes(fh.read(1), "big")
-            local_data = {
-                "index": x,
-                "name": actor_names[x],
-                "byte_4": byte_4,
-                "has_trees": data_pointer != 0
-            }
-            print(f"Dumping actor {x}")
+        extra_keys = list(extra_enemies.keys())
+        for x in range(344 + len(extra_enemies.keys())):
+            if x < 344:
+                fh.seek(0x8074C604 - offset + (8 * x))
+                data_pointer = int.from_bytes(fh.read(4), "big")
+                byte_4 = int.from_bytes(fh.read(1), "big")
+                local_data = {
+                    "index": x,
+                    "name": actor_names[x],
+                    "byte_4": byte_4,
+                    "has_trees": data_pointer != 0
+                }
+                print(f"Dumping actor {x}")
+                actor_name = actor_names[x]
+            else:
+                selected_extra = extra_keys[x - 344]
+                local_data = {
+                    "index": -1,
+                    "name": selected_extra,
+                    "byte_4": 1,
+                    "has_trees": True
+                }
+                data_pointer = extra_enemies[selected_extra]
+                print(f"Dumping {selected_extra}")
+                actor_name = selected_extra
             if data_pointer != 0:
-                folder_name = getSafeFolderName(actor_names[x])
-                has_duplicates = len([v for v in actor_names if v == actor_names[x]]) > 1
+                folder_name = getSafeFolderName(actor_name)
+                has_duplicates = len([v for v in actor_names if v == actor_name]) > 1
                 if has_duplicates:
-                    folder_name = getSafeFolderName(f"{actor_names[x]} ({x})")
+                    folder_name = getSafeFolderName(f"{actor_name} ({x})")
                 folder_path = f"{DUMP_PATH}/{folder_name}"
                 if not os.path.exists(folder_path):
                     os.mkdir(folder_path)
@@ -401,6 +424,7 @@ def parseArray(data: bytes, offset: int):
                         filename = f"Interaction {local_tree['target_interaction']}"
                     if target_pointer:
                         instructions = []
+                        args = []
                         z = 0
                         while True:
                             fh.seek(target_pointer - offset + (0xC * z))
@@ -411,6 +435,19 @@ def parseArray(data: bytes, offset: int):
                             unk9 = int.from_bytes(fh.read(1), "big")
                             force_break = int.from_bytes(fh.read(1), "big")
                             original_force_break = force_break
+                            arg_data = {
+                                "actor_interaction": -1 if targ_bitfield_0 == 0xFFFF else hex(targ_bitfield_0),
+                                "target_interaction": -1 if targ_bitfield_1 == 0xFFFF else hex(targ_bitfield_1),
+                            }
+                            if code != 0:
+                                arg_data["function"] = hex(code)
+                            if collision_type != 0:
+                                arg_data["collision_type"] = hex(collision_type)
+                            if unk9 != 0:
+                                arg_data["unk9"] = hex(unk9)
+                            if force_break != 0:
+                                arg_data["force_break"] = hex(force_break)
+                            args.append(arg_data)
                             conditions = []
                             if targ_bitfield_0 != 0xFFFF:
                                 conditions.append(f"(actor->0x132 & {hex(targ_bitfield_0)})")
@@ -420,7 +457,7 @@ def parseArray(data: bytes, offset: int):
                                 if len(conditions) > 0:
                                     instructions.append(f"if ({' && '.join(conditions)}) {{")
                                 if code != 0:
-                                    instructions.append(f"if (FUN_{hex(code)[2:]}(actor, target, param_2)) {{")
+                                    instructions.append(f"if (FUN_{hex(code)[2:]}(actor, target, collision_queue)) {{")
                                 instructions.append(f"if (CollisionData.collision_type_0 < {collision_type}) {{")
                                 instructions.append(f"CollisionData.collision_type_0 = {collision_type};")
                                 instructions.append(f"CollisionData.collision_source = target;")
@@ -469,6 +506,7 @@ def parseArray(data: bytes, offset: int):
                             if original_force_break == 0:
                                 break
                         local_tree["instructions"] = instructions
+                        local_tree["arg_data"] = args
                         # Parse Instructions
                         with open(f"{folder_path}/{getSafeFileName(filename)}.c", "w") as fg:
                             local_indent = 0
@@ -483,6 +521,18 @@ def parseArray(data: bytes, offset: int):
                                 fg.write(f"{output_str}\n")
                                 if instruction[-1] == "{":
                                     local_indent += 1
+                        # Parse Args
+                        with open(f"{folder_path}/{getSafeFileName(filename)}.h", "w") as fg:
+                            for arg in args:
+                                fg.write("{")
+                                prop_segs = []
+                                for prop in arg:
+                                    if prop == "function":
+                                        prop_segs.append(f".{prop}=(void*){arg[prop]}")
+                                    else:
+                                        prop_segs.append(f".{prop}={arg[prop]}")
+                                fg.write(", ".join(prop_segs))
+                                fg.write("},\n")
                     trees.append(local_tree)
                     if target_type == 0:
                         break

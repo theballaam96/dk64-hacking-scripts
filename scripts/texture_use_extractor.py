@@ -1,7 +1,7 @@
 import os
 import zlib
 import shutil
-from lib import getFilePath, getROMData, maps
+from lib import getFilePath, getROMData, maps, getSafeFileName
 
 main_pointer_table_offset = 0
 version = 0
@@ -52,7 +52,7 @@ def extractTable(table_start,table_size,dump_path,src_path,table_index,use_mapna
                 if len(texture_list) > 0:
                     sub_dump = f"{dump_path}/item_{item}.txt"
                     if use_mapname:
-                        sub_dump = f"{dump_path}/{item} - {maps[item]}.txt"
+                        sub_dump = f"{dump_path}/{item} - {getSafeFileName(maps[item])}.txt"
                     with open(sub_dump,"w") as fg:
                         for x in texture_list:
                             fg.write(f"{hex(x)}\n")

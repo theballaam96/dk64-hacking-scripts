@@ -146,9 +146,8 @@ def extractTable(start, size, folder, path, table_index, version):
                     is_png = False
                 if is_png:
                     f_bytes.save(f"{folder}{getSafeFileName(file_name)}.png")
-                else:
-                    with open(f"{folder}{getSafeFileName(file_name)}.bin","wb") as tex:
-                        tex.write(data)
+                with open(f"{folder}{getSafeFileName(file_name)}.bin","wb") as tex:
+                    tex.write(data)
         gif_path = f"{folder}gifs"
         if os.path.exists(gif_path):
             shutil.rmtree(gif_path)
@@ -161,6 +160,8 @@ def extractTable(start, size, folder, path, table_index, version):
                 for f in gif_list:
                     if f"{f}.png" in files_in_dir:
                         imgs.append(genGIFFrame(os.path.join(folder, f"{f}.png")))
+                if len(imgs) <= 1:
+                    continue
                 imgs[0].save(f"{gif_path}/{gif_name}.gif", save_all=True, append_images=imgs[1:], loop=0, duration=GIF_LENGTH_PER_FRAME * len(imgs), disposal=2)
 
 def getROMTables():
