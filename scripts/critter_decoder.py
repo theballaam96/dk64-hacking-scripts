@@ -3,7 +3,7 @@ import os
 import shutil
 import json
 import struct
-from lib import getFilePath, getROMData, maps
+from lib import getFilePath, getROMData, maps, Version
 
 num_tables = 32
 pointer_tables = []
@@ -11,7 +11,7 @@ main_pointer_table_offset = 0
 files = {}
 tab_indentation = 0
 folder_removal = []
-version = 0
+version = Version.us
 
 CRITTER_TYPES = [
     "TYPE_BAT_BROWN",
@@ -102,7 +102,7 @@ def extractMap(src_file: str, mapIndex : int, mapPath : str):
     global num_tables
     global folder_removal
 
-    critter_table = 0x16 - (version == 3)
+    critter_table = 0x16 - (version == Version.kiosk)
     entry_size = 0
 
     idx = 0

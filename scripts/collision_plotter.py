@@ -7,7 +7,7 @@ from typing import BinaryIO
 from enum import IntEnum, auto
 import math
 
-from lib import getFilePath, getROMData, maps, getSafeFolderName, getSafeFileName, object_modeltwo_types
+from lib import getFilePath, getROMData, maps, getSafeFolderName, getSafeFileName, object_modeltwo_types, Version
 from geo_dumper import dump_geometry_map
 from geo_plotters import add_triggers_to_file
 
@@ -277,7 +277,11 @@ class Triangle:
             self.has_unused_floor = True
         # Wall Props
         if self.is_wall:
-            self.is_solid = (properties & 0x10) != 0
+            if used_version == Version.lodgenet:
+                # Why was this changed?
+                self.is_solid = (properties & 0xC0) == 0xC0
+            else:
+                self.is_solid = (properties & 0x10) != 0
         # Unused
         self.has_unused_wall = False
         if self.is_wall and ((properties & 0xFFEF) == 0) and properties not in (0x418, 0x8):
@@ -674,7 +678,7 @@ class GeometryInfo:
 
         
 def getPointerIndex(index: int):
-    if used_version == 3:
+    if used_version == Version.kiosk:
         return index - 1
     return index
 
@@ -913,7 +917,7 @@ def handleMaps(file: str, dump: str, pointer_offset: int):
                                 write_obj_file(slip_tris, f"{directory}/Slippable Floors.obj")
                                 write_obj_file(en_tris, f"{directory}/Enum Type Floors.obj")
                             write_obj_file(total_tris, f"{directory}/Walls and Floors.obj")
-                if DUMP_GEOMETRY and used_version != 3:
+                if DUMP_GEOMETRY and used_version != Version.kiosk:
                     if not os.path.exists(directory):
                         os.mkdir(directory)
                     print(f"Creating Geometry Map for map {map_index}")

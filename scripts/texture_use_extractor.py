@@ -1,10 +1,10 @@
 import os
 import zlib
 import shutil
-from lib import getFilePath, getROMData, maps, getSafeFileName
+from lib import getFilePath, getROMData, maps, getSafeFileName, Version
 
 main_pointer_table_offset = 0
-version = 0
+version = Version.us
 mapgeo_table = [1,1,1,0]
 m2geo_table = [4,4,4,3]
 actgeo_table = [5,5,5,4]

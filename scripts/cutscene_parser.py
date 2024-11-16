@@ -1,6 +1,6 @@
 import os
 import zlib
-from lib import getFilePath, getROMData, getSafeFolderName, maps
+from lib import getFilePath, getROMData, getSafeFolderName, maps, Version
 
 dump_unused = True
 
@@ -322,7 +322,7 @@ def parseSubCommand(sub_command, params_lst):
 
 pointer_table_offset = 0
 cutscene_table_index = 8
-version = 0
+version = Version.us
 
 header_info = []
 base_info = []
@@ -620,7 +620,7 @@ def analyzeFile(data,folder_name,file_index):
 file_path = getFilePath()
 pointer_table_offset, version, dump_path, valid = getROMData(file_path, "cutscenes")
 if valid:
-	if version == 3:
+	if version == Version.kiosk:
 		cutscene_table_index = 7
 	with open(file_path,"rb") as romfile:
 		romfile.seek(pointer_table_offset + (cutscene_table_index * 4))

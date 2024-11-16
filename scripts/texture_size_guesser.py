@@ -2,10 +2,10 @@ import os
 import zlib
 import shutil
 import json
-from lib import getFilePath, getROMData, maps
+from lib import getFilePath, getROMData, maps, Version
 
 main_pointer_table_offset = 0
-version = 0
+version = Version.us
 tables = [7, 14, 25]
 
 size_guesses = {
@@ -81,7 +81,7 @@ def getROMTables():
         with open(file_path,"rb") as fh:
             for tbl in tables:
                 focused_tbl = tbl
-                if version == 3:
+                if version == Version.kiosk:
                     focused_tbl -= 1 # Kiosk is missing table 0
                 fh.seek(main_pointer_table_offset + (32 * 4) + (focused_tbl * 4))
                 tbl_size = int.from_bytes(fh.read(4),"big")

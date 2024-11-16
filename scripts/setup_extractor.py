@@ -4,12 +4,12 @@ import shutil
 import json
 import struct
 
-from lib import getFilePath, getROMData, maps
+from lib import getFilePath, getROMData, maps, Version
 
 main_pointer_table_offset = 0
 setup_table_index = 9
 folder_removal = []
-version = 0
+version = Version.us
 
 temp_file = "temp.bin"
 
@@ -79,13 +79,13 @@ def extractMaps(src_file: str, dump_path: str):
     global maps
     global folder_removal
 
-    setup_table_index = 9 - (version == 3)
+    setup_table_index = 9 - (version == Version.kiosk)
     with open(src_file,"rb") as fh:
         fh.seek(main_pointer_table_offset + (setup_table_index * 4))
         setup_table = (int.from_bytes(fh.read(4),"big") & 0x7FFFFFFF) + main_pointer_table_offset
         for mapIndex, mapName in enumerate(maps):
             lim = 221
-            if version == 3:
+            if version == Version.kiosk:
                 lim = 200
             if mapIndex < lim:
                 mapPath = f"{dump_path}/{make_safe_filename(mapName)}"

@@ -8,17 +8,24 @@ from enum import IntEnum, auto
 root = tk.Tk()
 root.withdraw()
 
-class Version:
+class VersionInfo:
     def __init__(self, name: str, pointer_offset: int):
         self.name = name
         self.pointer_offset = pointer_offset
+        
+class Version(IntEnum):
+    us = 0
+    pal = auto()
+    jp = auto()
+    lodgenet = auto()
+    kiosk = auto()
 
 versions = [
-    Version("us", 0x101C50),
-    Version("pal", 0x1038D0),
-    Version("jp", 0x1039C0),
-    Version("kiosk", 0x1A7C20),
-    Version("lodgenet", 0x1037C0),
+    VersionInfo("us", 0x101C50),
+    VersionInfo("pal", 0x1038D0),
+    VersionInfo("jp", 0x1039C0),
+    VersionInfo("lodgenet", 0x1037C0),
+    VersionInfo("kiosk", 0x1A7C20),
 ]
 
 class TextureFormats(IntEnum):
@@ -1004,23 +1011,23 @@ def getROMData(rom_path: str, folder: str) -> tuple:
             release_or_kiosk = int.from_bytes(fh.read(1),"big")
             region = int.from_bytes(fh.read(1),"big")
             if release_or_kiosk == 0x50:
-                version = 3 # Kiosk
+                version = Version.kiosk # Kiosk
             else:
                 if region == 0x45:
-                    version = 0 # US
+                    version = Version.us # US
                 elif region == 0x4A:
-                    version = 2 # JP
+                    version = Version.jp # JP
                 elif region == 0x50:
-                    version = 1 # PAL
+                    version = Version.pal # PAL
                 elif region == 0x47:
-                    version = 4 # Lodgenet
+                    version = Version.lodgenet # Lodgenet
                 else:
                     print("Invalid version")
                     return (None, None, None, False)
             version_info = versions[version]
             pointer_table_offset = version_info.pointer_offset
             append = version_info.name
-        if version < 0 or version > 4:
+        if version < Version.us or version > Version.kiosk:
             print("Invalid version")
             return (None, None, None, False)
         sub_dump_path = f"{getDirectoryLevel()}bin/{folder}/"
@@ -1030,7 +1037,7 @@ def getROMData(rom_path: str, folder: str) -> tuple:
         if os.path.exists(dump_path):
             shutil.rmtree(dump_path)
         os.mkdir(dump_path)
-    return (pointer_table_offset, version, dump_path, version >= 0 and version <= 4)
+    return (pointer_table_offset, version, dump_path, version >= Version.us and version <= Version.lodgenet)
 
 def getSafeFileName(name):
     """Get file name without invalid characters."""

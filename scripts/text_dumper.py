@@ -2,10 +2,10 @@ import zlib
 import os
 import struct
 import json
-from lib import getFilePath, getROMData
+from lib import getFilePath, getROMData, Version
 
 def getIconDB(version):
-    if version != 3:
+    if version != Version.kiosk:
         return {
             0x0: "waterfall_tall",
             0x1: "waterfall_short",
@@ -237,7 +237,7 @@ def getIconDB(version):
     }
 
 def getFileNameDB(version):
-    if version != 3:
+    if version != Version.kiosk:
         return [
             "Bonus Instructions",
             "Story Level Intro Text",

@@ -1,7 +1,7 @@
 import os
 import zlib
 import shutil
-from lib import getFilePath, getROMData, versions, getDirectoryLevel, TextureFormats, TextureFile, getSafeFileName
+from lib import getFilePath, getROMData, versions, getDirectoryLevel, TextureFormats, TextureFile, getSafeFileName, Version
 import math
 from PIL import Image
 from db_textures_7 import textures_7
@@ -11,7 +11,7 @@ from typing import BinaryIO
 from enum import IntEnum, auto
 
 main_pointer_table_offset = 0
-version = 0
+version = Version.us
 tables = [7, 14, 25]
 temp_im = "temp_im.bin"
 texture_data_tables = {
@@ -173,7 +173,7 @@ def getROMTables():
     if valid:
         for x in tables:
             tbl_name = x
-            if version == 3:
+            if version == Version.kiosk:
                 tbl_name = x - 1
             tbl_path = f"{dump_path}/table_{tbl_name}"
             if os.path.exists(tbl_path):
@@ -183,7 +183,7 @@ def getROMTables():
         with open(file_path,"rb") as fh:
             for tbl in tables:
                 focused_tbl = tbl
-                if version == 3:
+                if version == Version.kiosk:
                     focused_tbl -= 1 # Kiosk is missing table 0
                 fh.seek(main_pointer_table_offset + (32 * 4) + (focused_tbl * 4))
                 tbl_size = int.from_bytes(fh.read(4),"big")

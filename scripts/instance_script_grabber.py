@@ -5,7 +5,7 @@ import gzip
 from typing import BinaryIO
 import math
 
-from lib import getFilePath, getROMData, maps, object_modeltwo_types
+from lib import getFilePath, getROMData, maps, object_modeltwo_types, Version
 
 hud_items = [
 	"Coloured banana",
@@ -311,7 +311,7 @@ script_table_index = 10
 files = {}
 tab_indentation = 0
 folder_removal = []
-version = 0
+version = Version.us
 
 def getTriggerTypeName(index):
 	if (index < (len(trigger_types) - 1)):
@@ -1420,7 +1420,7 @@ def parsePointerTables(fh : BinaryIO):
 
 	# Read data and original uncompressed size
 	for x in pointer_tables:
-		if x["index"] == script_table_index - (version == 3) or x["index"] == setup_table_index - (version == 3):
+		if x["index"] == script_table_index - (version == Version.kiosk) or x["index"] == setup_table_index - (version == Version.kiosk):
 			for y in x["entries"]:
 				absolute_size = y["next_absolute_address"] - y["absolute_address"]
 
@@ -1452,8 +1452,8 @@ def extractMap(src_file: str, mapIndex : int, mapPath : str):
 	global relevant_pointer_tables
 	global folder_removal
 
-	setup_tbl = setup_table_index - (version == 3)
-	script_tbl = script_table_index - (version == 3)
+	setup_tbl = setup_table_index - (version == Version.kiosk)
+	script_tbl = script_table_index - (version == Version.kiosk)
 
 	tbls = [setup_tbl,script_tbl]
 	sizes = [0,0]
